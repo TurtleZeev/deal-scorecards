@@ -1,110 +1,169 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Deal Scorecard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .score-card {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .category {
-            margin: 20px 0;
-            padding: 15px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e5e7eb;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            background: #3b82f6;
-            transition: width 0.5s ease;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <div class="score-card">
-        <h1 class="text-3xl font-bold text-center mb-8">Turtle Hill Capital - Deal Score™</h1>
-        <div class="text-5xl font-bold text-center text-blue-600 mb-8">90/100</div>
-        
-        <div class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Core Categories</h2>
-            
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Financial Fundamentals</span>
-                    <span class="font-bold">18/20</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 90%"></div>
-                </div>
-            </div>
+import React from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Market Opportunity</span>
-                    <span class="font-bold">19/20</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 95%"></div>
-                </div>
-            </div>
+const ClaudeDealScore = ({ dealData }) => {
+  const defaultData = {
+    companyName: 'Elephant Energy',
+    previousScore: 85,
+    currentScore: 90,
+    categories: {
+      financial: {
+        score: 18,
+        total: 20,
+        subcategories: {
+          growth: { score: 5, total: 5, label: 'Growth trajectory' },
+          margin: { score: 4, total: 5, label: 'Margin profile' },
+          unit: { score: 5, total: 5, label: 'Unit economics' },
+          cashFlow: { score: 4, total: 5, label: 'Cash flow dynamics' }
+        }
+      },
+      market: {
+        score: 19,
+        total: 20,
+        subcategories: {
+          size: { score: 5, total: 5, label: 'Market size' },
+          growth: { score: 5, total: 5, label: 'Growth rate' },
+          position: { score: 5, total: 5, label: 'Competitive positioning' },
+          regulatory: { score: 4, total: 5, label: 'Regulatory tailwinds' }
+        }
+      },
+      team: {
+        score: 17,
+        total: 20,
+        subcategories: {
+          experience: { score: 4, total: 5, label: 'Management experience' },
+          track: { score: 3, total: 5, label: 'Track record' },
+          operational: { score: 5, total: 5, label: 'Operational capabilities' },
+          strategic: { score: 5, total: 5, label: 'Strategic relationships' }
+        }
+      }
+    },
+    riskCategories: {
+      financial: {
+        score: 14,
+        total: 15,
+        subcategories: {
+          credit: { score: 5, total: 5, label: 'Credit risk' },
+          workingCapital: { score: 4, total: 5, label: 'Working capital risk' },
+          growth: { score: 5, total: 5, label: 'Growth funding risk' }
+        }
+      },
+      market: {
+        score: 14,
+        total: 15,
+        subcategories: {
+          competition: { score: 5, total: 5, label: 'Competition risk' },
+          regulatory: { score: 4, total: 5, label: 'Regulatory risk' },
+          adoption: { score: 5, total: 5, label: 'Market adoption risk' }
+        }
+      },
+      operational: {
+        score: 8,
+        total: 10,
+        subcategories: {
+          execution: { score: 4, total: 5, label: 'Execution risk' },
+          technology: { score: 4, total: 5, label: 'Technology risk' }
+        }
+      }
+    }
+  };
 
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Team & Execution</span>
-                    <span class="font-bold">17/20</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 85%"></div>
-                </div>
+  const data = dealData || defaultData;
+
+  const renderScoreBar = (score, total) => (
+    <div className="w-full bg-gray-700 rounded-full h-2">
+      <div 
+        className="bg-[#00FF9D] h-2 rounded-full" 
+        style={{width: `${(score/total) * 100}%`}}
+      />
+    </div>
+  );
+
+  const renderSubcategories = (subcategories) => (
+    <div className="space-y-2 ml-4">
+      {Object.entries(subcategories).map(([key, data]) => (
+        <div key={key} className="flex items-center justify-between">
+          <span className="text-gray-300 text-sm">{data.label}</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300">{data.score}/{data.total}</span>
+            <div className="w-20">{renderScoreBar(data.score, data.total)}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <Card className="w-full max-w-3xl bg-gray-900 text-white border-gray-800">
+      <CardHeader>
+        <div className="flex justify-between items-center">
+          <div>
+            <CardTitle className="text-2xl font-bold">
+              CLAUDE DEAL SCORE™
+            </CardTitle>
+            <h2 className="text-xl text-gray-300 mt-1">{data.companyName}</h2>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="text-right">
+              <div className="text-3xl font-bold text-[#00FF9D]">{data.currentScore}/100</div>
+              <div className="text-sm text-gray-400 flex items-center justify-end gap-1">
+                Previous: {data.previousScore}
+                {data.currentScore > data.previousScore ? 
+                  <ChevronUp className="w-4 h-4 text-green-400" /> : 
+                  <ChevronDown className="w-4 h-4 text-red-400" />
+                }
+              </div>
             </div>
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="space-y-6">
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Core Categories ({
+            Object.values(data.categories).reduce((acc, cat) => acc + cat.score, 0)
+          }/{
+            Object.values(data.categories).reduce((acc, cat) => acc + cat.total, 0)
+          })</h3>
+          
+          {Object.entries(data.categories).map(([key, category]) => (
+            <div key={key} className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">{key.charAt(0).toUpperCase() + key.slice(1)} Fundamentals</span>
+                <div className="flex items-center gap-2">
+                  <span>{category.score}/{category.total}</span>
+                  <div className="w-24">{renderScoreBar(category.score, category.total)}</div>
+                </div>
+              </div>
+              {renderSubcategories(category.subcategories)}
+            </div>
+          ))}
         </div>
 
         <div>
-            <h2 class="text-xl font-bold mb-4">Risk Categories</h2>
-            
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Financial Risk</span>
-                    <span class="font-bold">14/15</span>
+          <h3 className="text-lg font-semibold mb-4">Risk Categories ({
+            Object.values(data.riskCategories).reduce((acc, cat) => acc + cat.score, 0)
+          }/{
+            Object.values(data.riskCategories).reduce((acc, cat) => acc + cat.total, 0)
+          })</h3>
+          
+          {Object.entries(data.riskCategories).map(([key, category]) => (
+            <div key={key} className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">{key.charAt(0).toUpperCase() + key.slice(1)} Risk</span>
+                <div className="flex items-center gap-2">
+                  <span>{category.score}/{category.total}</span>
+                  <div className="w-24">{renderScoreBar(category.score, category.total)}</div>
                 </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 93%"></div>
-                </div>
+              </div>
+              {renderSubcategories(category.subcategories)}
             </div>
-
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Market Risk</span>
-                    <span class="font-bold">14/15</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 93%"></div>
-                </div>
-            </div>
-
-            <div class="category">
-                <div class="flex justify-between mb-2">
-                    <span class="font-medium">Operational Risk</span>
-                    <span class="font-bold">8/10</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" style="width: 80%"></div>
-                </div>
-            </div>
+          ))}
         </div>
-    </div>
-</body>
-</html>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default ClaudeDealScore;
